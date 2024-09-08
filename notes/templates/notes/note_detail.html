@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>{{ note.title }}</h2>
+  <div>{{ note.content|safe }}</div>
+  <a href="{% url 'edit_note' note.id %}" class="btn btn-secondary">Edit</a>
+{% endblock %}

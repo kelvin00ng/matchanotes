@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}My Site{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/reader.css' %}">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+</head>
+<body>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <header>
+        <div class="header-content">
+            <h1>Matcha Notes</h1>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'upload_document' %}">Create AI Note</a></li>
+                    {% if user.is_authenticated %}
+                        <li>
+                            <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" style="background:none;border:none;color:inherit;padding:0;font:inherit;cursor:pointer;">Logout</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Login</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main class="clearfix">
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    <footer>
+        <p>© 2024 Matcha Notes</p>
+        <p> Made with Love from Singapore</p>
+    </footer>
+    <!-- Quill JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    {% block extra_js %}
+    <!-- Additional scripts can be injected by child templates -->
+    {% endblock %}
+</body>
+</html>

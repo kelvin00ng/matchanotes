@@ -1,0 +1,118 @@
+<!-- document_processor/templates/document_processor/note_form.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Edit Note</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <!-- Title Field -->
+    <div>
+        {{ form.title.label_tag }}
+        {{ form.title }}
+    </div>
+
+    <!-- Hashtag Field -->
+    <div>
+        {{ form.hashtags.label_tag }}
+        {{ form.hashtags }}
+    </div>
+
+    
+    <!-- Content Field -->
+    <div id="editor-container">
+        <div id="editor">
+            <!-- This will be handled by Quill -->
+        </div>
+    </div>
+    
+    <!-- Hidden Input for Quill Content -->
+    <input type="hidden" name="processed_content" id="processed_content-input" value="{{ document.processed_content }}"">
+    <button type="submit">Save</button>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize Quill editor
+    var quill = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                [{ 'script': 'sub' }, { 'script': 'super' }],
+                [{ 'indent': '-1' }, { 'indent': '+1' }],
+                [{ 'direction': 'rtl' }],
+                ['link', 'image'],
+                ['clean']
+            ]
+        }
+    });
+
+    // Load the existing content into Quill editor
+    var existingContent = document.getElementById('processed_content-input').value;
+    quill.root.innerHTML = existingContent;
+
+    // Update hidden input with Quill's content before form submission
+    var form = document.querySelector('form');
+    form.onsubmit = function() {
+        var content = document.querySelector('#processed_content-input');
+        content.value = quill.root.innerHTML;
+    };
+
+     // Function to auto-save content
+     function autoSave() {
+        var content = quill.root.innerHTML;
+        var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+        var title = document.querySelector('input[name="title"]').value;
+        //var hashtags = document.querySelector('select[name="hashtags"]').value;
+
+        fetch("{% url 'auto_save_note' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                content: content,
+                title: title,
+                //hashtags: hashtags
+            })
+        }).then(response => {
+            if (!response.ok) {
+                console.error('Auto-save failed');
+            }
+        }).catch(error => {
+            console.error('Auto-save error:', error);
+        });
+    }
+
+    // Auto-save every 10 seconds
+    setInterval(autoSave, 10000);
+
+    // Update hidden input with Quill's content before form submission
+    var form = document.querySelector('form');
+    form.onsubmit = function() {
+        var content = document.querySelector('#processed_content-input');
+        content.value = quill.root.innerHTML;
+    }    
+    //fix toolbar at top of the screen
+    window.addEventListener('scroll', function() {
+        var toolbar = document.querySelector('.ql-toolbar');
+        var toolbarHeight = toolbar.offsetHeight;
+        var editorContainer = document.getElementById('editor-container');
+        var editorContainerTop = editorContainer.offsetTop;
+
+        if (window.scrollY > editorContainerTop) {
+            toolbar.classList.add('fixed');
+            editorContainer.style.paddingTop = toolbarHeight + 'px';
+        } else {
+            toolbar.classList.remove('fixed');
+            editorContainer.style.paddingTop = '0';
+        }
+    });
+</script>
+{% endblock %}

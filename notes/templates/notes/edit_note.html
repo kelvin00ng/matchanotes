@@ -1,0 +1,13 @@
+<!-- document_processor/templates/document_processor/edit_note.html -->
+{% extends "base.html" %}
+
+{% block title %}Edit Note{% endblock %}
+
+{% block content %}
+<h1>Edit Note</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save Changes</button>
+</form>
+{% endblock %}

@@ -1,0 +1,5 @@
+langchain-community
+openai
+youtube-transcript-api
+tiktoken
+pypdf

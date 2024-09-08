@@ -1,0 +1,12 @@
+<!-- document_processor/templates/document_processor/document_detail.html -->
+{% extends "base2.html" %}
+
+{% block title %}Document Details{% endblock %}
+
+{% block content %}
+<h1>{{ document.title }}</h1>
+<div class="processed-content">
+    {{ document.processed_content|safe }}
+</div>
+<a href="{% url 'edit_document' pk=document.pk %}">Edit Document</a>
+{% endblock %}

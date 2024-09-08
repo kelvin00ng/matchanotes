@@ -1,0 +1,53 @@
+<!-- templates/document_processor/document_form.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Create Your AI Note</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <!-- Title Field -->
+        <p>
+            {{ form.title.label_tag }}
+            {{ form.title }}
+        </p>
+
+        <!-- Content Field -->
+        <p>
+            {{ form.content.label_tag }}
+            {{ form.content }}
+        </p>
+
+        <!-- Hashtags Field -->
+        <p>
+            {{ form.hashtags.label_tag }}
+            {{ form.hashtags }}
+        </p>
+
+        <!-- File Field (if needed) -->
+        <p>
+            {{ form.file.label_tag }}
+            {{ form.file }}
+        </p>
+
+        <!-- YouTube URL Field (if needed) -->
+        <p>
+            {{ form.youtube_url.label_tag }}
+            {{ form.youtube_url }}
+        </p>
+
+        <button type="submit">Upload</button>
+    </form>
+
+    {% if form.errors %}
+        <div class="error-messages">
+            <ul>
+            {% for field, errors in form.errors.items %}
+                <li><strong>{{ field }}:</strong> {{ errors|striptags }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

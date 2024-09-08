@@ -1,0 +1,42 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="centered-heading">Your Notes</h2>
+
+    <h3>Filter by Hashtag:</h3>
+    <div class="hashtag-buttons" style="text-align: center; margin-bottom: 20px;">
+        <a href="{% url 'home' %}" class="hashtag-button">All</a>
+        {% for hashtag in hashtag_buttons %}
+            <a href="{% url 'home' %}?hashtag={{ hashtag }}" class="hashtag-button">{{ hashtag }}</a>
+        {% endfor %}
+    </div>
+
+    <h3>Documents</h3>
+    <div class="card-container">
+        {% for document in documents %}
+            <div class="card">
+                <div class="card-header">
+                    {{ document.title }}
+                </div>
+                <div class="card-body">
+                    {{ document.processed_content|safe|slice:":90" }}...
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'document_detail' document.id %}"><button>View</button></a>
+                    <a href="{% url 'edit_document' document.id %}"><button>Edit</button></a>
+                    <form action="{% url 'delete_document' document.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">Delete</button>
+                    </form>
+                </div>
+            </div>
+        {% empty %}
+            <p>No documents available.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

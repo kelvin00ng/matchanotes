@@ -1,0 +1,43 @@
+<!-- document_processor/templates/document_processor/note_form.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{% if note %}Edit{% else %}Create{% endif %} Note</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {{ form.as_p }}
+    <div id="editor-container">
+        <div id="editor">
+            {{ form.content }}
+        </div>
+    </div>
+    <button type="submit">Save</button>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    var quill = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                [{ 'script': 'sub' }, { 'script': 'super' }],
+                [{ 'indent': '-1' }, { 'indent': '+1' }],
+                [{ 'direction': 'rtl' }],
+                ['link', 'image'],
+                ['clean']
+            ]
+        }
+    });
+
+    var form = document.querySelector('form');
+    form.onsubmit = function() {
+        var content = document.querySelector('input[name="content"]');
+        content.value = quill.root.innerHTML;
+    };
+</script>
+{% endblock %}
